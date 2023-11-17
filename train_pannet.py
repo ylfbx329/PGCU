@@ -8,7 +8,6 @@ from utils.dataset import MyDataset
 from utils.visualize import Evaluate
 from model.PanNet import PanNet, PanNet_PGCU
 
-
 # global config
 device = 'cuda:0'
 epoches = 100
@@ -46,7 +45,6 @@ p_test_loss = []
 g_train_loss = []
 g_test_loss = []
 
-
 # trainning
 for epoch in tqdm(range(epoches)):
     # trainning
@@ -71,19 +69,19 @@ for epoch in tqdm(range(epoches)):
         out, up_ms = PanNet_PGCU.forward(pan, lrms, hpan)
         loss_1 = g_lossFun(out, label)
         # optional: for residual structure
-        loss_2 =  g_lossFun(up_ms, label)
+        loss_2 = g_lossFun(up_ms, label)
         loss = loss_1 + loss_2
         g_optimizer.zero_grad()
         loss.backward()
         g_optimizer.step()
         g_loss += loss_1.item()
-    p_train_loss.append(p_loss/train_loader.__len__())
-    g_train_loss.append(g_loss/train_loader.__len__())
-    print('epoch:'+str(epoch), 
-          'PanNet train loss:'+str(p_loss/train_loader.__len__()), 
-          'PanNet_PGCU train loss:'+str(g_loss/train_loader.__len__()))
+    p_train_loss.append(p_loss / train_loader.__len__())
+    g_train_loss.append(g_loss / train_loader.__len__())
+    print('epoch:' + str(epoch),
+          'PanNet train loss:' + str(p_loss / train_loader.__len__()),
+          'PanNet_PGCU train loss:' + str(g_loss / train_loader.__len__()))
     # testing
-    if epoch%10 == 0:
+    if epoch % 10 == 0:
         p_loss = 0
         PanNet.eval()
         g_loss = 0
@@ -102,9 +100,9 @@ for epoch in tqdm(range(epoches)):
             out, up_ms = PanNet_PGCU.forward(pan, lrms, hpan)
             loss = g_lossFun(out, label)
             g_loss += loss.item()
-        p_test_loss.append(p_loss/test_loader.__len__())
-        g_test_loss.append(g_loss/test_loader.__len__())
-        print('epoch:'+str(epoch), 
-              'PanNet test loss:'+str(p_loss/test_loader.__len__()), 
-              'PanNet_PGCU test loss:'+str(g_loss/test_loader.__len__()))
+        p_test_loss.append(p_loss / test_loader.__len__())
+        g_test_loss.append(g_loss / test_loader.__len__())
+        print('epoch:' + str(epoch),
+              'PanNet test loss:' + str(p_loss / test_loader.__len__()),
+              'PanNet_PGCU test loss:' + str(g_loss / test_loader.__len__()))
     evaluater.visualize(p_train_loss, p_test_loss, g_train_loss, g_test_loss, PanNet, PanNet_PGCU)
